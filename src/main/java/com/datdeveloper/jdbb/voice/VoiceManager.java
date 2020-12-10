@@ -1,8 +1,6 @@
 package com.datdeveloper.jdbb.voice;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventListener;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -26,7 +24,14 @@ public class VoiceManager {
     AudioManager audioMan = null;
     AudioHandler audioHandler = new AudioHandler();
 
+    /**
+     * Connect the bot to the given voice channel
+     * @param channel The channel to join
+     * @param guild The server to join on
+     * @return True if successful connection
+     */
     public boolean connect(VoiceChannel channel, Guild guild) {
+        // TODO: Extend to support multiple servers
         if (audioMan == null){
             audioMan = guild.getAudioManager();
             audioMan.setSendingHandler(audioHandler);
