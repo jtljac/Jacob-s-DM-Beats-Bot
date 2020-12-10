@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group 'org.datdeveloper.jdbb'
+version '1.0'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.datdeveloper.jai.Bot'
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'com.sedmelluq:jda-nas:1.1.0'
+    implementation 'net.dv8tion:JDA:4.1+'
+    implementation 'com.sedmelluq:lavaplayer:1.3+'
+}
