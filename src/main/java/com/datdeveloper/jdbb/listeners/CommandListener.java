@@ -9,10 +9,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class CommandListener extends ListenerAdapter {
 
     private String commandPrefix = "!jdbb";
+    private Random random = new Random();
 
     @Override
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
@@ -79,6 +81,47 @@ public class CommandListener extends ListenerAdapter {
                         }
                         break;
 
+                    case "battle":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/battle/battle" + random.nextInt(2) + ".mp3",  -1, true);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
+                    case "dual":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/dual.mp3",  1, true);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
+                    case "death":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/death.mp3",  0, true);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
+                    case "elfscratch":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/scratch.mp3",  0, true);
+                            VoiceManager.getInstance().playTrack("sound/elfs.mp3",  0, false);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
+                    case "elfs":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/elfs.mp3",  0, true);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
                     case "finale":
                         if (Bot.DMs.contains(event.getMember().getId())) {
                             VoiceManager.getInstance().playTrack("sound/finale.mp3",  0, true);
@@ -104,6 +147,14 @@ public class CommandListener extends ListenerAdapter {
                         }
                         break;
 
+                    case "fvictory":
+                        if (Bot.DMs.contains(event.getMember().getId())) {
+                            VoiceManager.getInstance().playTrack("sound/fvictory.mp3", 0, true);
+                        } else {
+                            event.getChannel().sendMessage("That is a dm only command").queue();
+                        }
+                        break;
+
                     case "victory":
                         if (Bot.DMs.contains(event.getMember().getId())) {
                             VoiceManager.getInstance().playTrack("sound/victory.mp3", 0, true);
@@ -115,6 +166,7 @@ public class CommandListener extends ListenerAdapter {
                     default:
                         event.getChannel().sendMessage("I don't know that command").queue();
                 }
+                event.getMessage().delete().reason("Because").queue();
             } else {
                 event.getChannel().sendMessage("Please enter a subcommand").queue();
             }

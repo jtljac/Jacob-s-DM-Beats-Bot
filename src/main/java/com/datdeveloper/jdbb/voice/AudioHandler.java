@@ -23,6 +23,7 @@ public class AudioHandler implements AudioSendHandler{
         AudioSourceManagers.registerRemoteSources(playerManager);
 
         audioPlayer.addListener(scheduler);
+        audioPlayer.setVolume(30);
     }
 
     @Override
