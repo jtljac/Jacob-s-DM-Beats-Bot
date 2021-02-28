@@ -5,57 +5,87 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 public class TrackScheduler extends AudioEventAdapter {
     Deque<TrackRules> trackQueue = new ArrayDeque<>();
+    AudioPlayer player;
     TrackRules currentTrack = null;
 
     // Force the current track to loop
     boolean forceLoop = false;
+    boolean queueLoop = false;
 
+    public TrackScheduler (AudioPlayer player) {
+        this.player = player;
+    }
 
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         super.onTrackEnd(player, track, endReason);
-        if (endReason == AudioTrackEndReason.REPLACED) return;
+        if (endReason == AudioTrackEndReason.REPLACED || endReason == AudioTrackEndReason.STOPPED) return;
 
         if (forceLoop || currentTrack.loopcount != 0) {
-            if (forceLoop) {
+            if (!forceLoop) {
                 currentTrack.loopcount -= 1;
             }
             currentTrack.track = track.makeClone();
         } else {
+            if (queueLoop) {
+                currentTrack.track = track.makeClone();
+                trackQueue.add(currentTrack);
+            }
+
             if (!trackQueue.isEmpty()) currentTrack = trackQueue.remove();
             else currentTrack = null;
         }
         if (currentTrack != null) player.playTrack(currentTrack.track);
     }
 
-    public void queueTrack(AudioTrack track, int loopCount) {
-        trackQueue.add(new TrackRules(track, loopCount));
+    /**
+     * Queue the given track to play
+     * @param track The track to queue
+     */
+    public void queueTrack(TrackRules track) {
+        if (currentTrack == null || player.isPaused()) {
+            currentTrack = track;
+            player.playTrack(currentTrack.track);
+            if (player.isPaused()) player.setPaused(false);
+        } else {
+            trackQueue.add(track);
+        }
     }
 
     /**
      * Play the passed track immediately, rather than queueing it
-     * @param player The Audio player
      * @param track The track to play
-     * @param loopCount The amount of times to loop the track
      * @param clear Should the queue of upcoming tracks be cleared?
      */
-    public void forcePlay(AudioPlayer player, AudioTrack track, int loopCount, boolean clear){
+    public void forcePlay(TrackRules track, boolean clear){
         if (clear) trackQueue.clear();
-        currentTrack = new TrackRules(track, loopCount);
+        currentTrack = track;
         player.playTrack(currentTrack.track);
+    }
+
+    public void clearQueue() {
+        trackQueue.clear();
+    }
+
+    public void shuffle() {
+        List<TrackRules> temp = new ArrayList<>(trackQueue);
+        Collections.shuffle(temp);
+        trackQueue = new ArrayDeque<>(temp);
+    }
+
+    public List<TrackRules> getQueue() {
+        return new ArrayList<>(trackQueue);
     }
 
     /**
      * Skips to the next track
-     * @param player The audio player
      * @return If theres any songs left
      */
-    public boolean skip(AudioPlayer player) {
+    public boolean skip() {
         if (!trackQueue.isEmpty()) {
             currentTrack = trackQueue.remove();
             player.playTrack(currentTrack.track);
@@ -67,12 +97,21 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    public boolean stop(AudioPlayer player) {
-        return false;
+    public int stop() {
+        if (currentTrack == null) return 1;
+        else if (player.isPaused()) return 2;
+
+        player.setPaused(true);
+        return 0;
     }
 
-    public boolean resume(AudioPlayer player) {
-        return false;
+    public int resume() {
+        if (currentTrack == null) return 1;
+        else if (!player.isPaused()) return 2;
+
+        player.setPaused(false);
+
+        return 0;
     }
 
     /**

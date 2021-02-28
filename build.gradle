@@ -27,7 +27,8 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile 'com.sedmelluq:jda-nas:1.1.0'
+    implementation 'com.sedmelluq:jda-nas:1.1.0'
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
     implementation 'net.dv8tion:JDA:4.1+'
     implementation 'com.sedmelluq:lavaplayer:1.3+'
 }

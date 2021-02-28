@@ -1,0 +1,148 @@
+{
+    "bar": {
+        "random": false,
+        "category": "ambience",
+        "tracks": [
+            {
+                "path": "bar.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "barfight": {
+        "random": false,
+        "category": "battle",
+        "tracks": [
+            {
+                "path": "barfight.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "death": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "death.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "dual": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "dual.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "elfs": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "elfs.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "elfscratch": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "scratch.mp3",
+                "loop": 0
+            },
+            {
+                "path": "elfs.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "finale": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "finale.mp3",
+                "loop": 0
+            },
+            {
+                "path": "finale loop.mp3",
+                "loop": -1
+            }
+        ]
+    },
+    "fvictory": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "fvictory.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "hope": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "hope.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "sad": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "sad.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "victory": {
+        "random": false,
+        "tracks": [
+            {
+                "path": "victory.mp3",
+                "loop": 0
+            }
+        ]
+    },
+    "battle": {
+        "random": true,
+        "tracks": [
+            {
+                "path": "Battle/battle0.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle1.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle2.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle3.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle4.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle5.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle6.mp3",
+                "loop": -1
+            },
+            {
+                "path": "Battle/battle7.mp3",
+                "loop": -1
+            }
+        ]
+    }
+}
