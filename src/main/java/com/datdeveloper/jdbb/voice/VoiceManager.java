@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 import javax.annotation.Nullable;
+import java.util.*;
 
 public class VoiceManager {
     // Singleton
@@ -16,9 +17,7 @@ public class VoiceManager {
         }
         return instance;
     }
-
-    AudioManager audioMan = null;
-    public AudioHandler audioHandler = new AudioHandler();
+    public Map<Long, AudioHandler> audioHandlers = new HashMap<>();
 
     /**
      * Connect the bot to the given voice channel
@@ -26,49 +25,44 @@ public class VoiceManager {
      * @param guild The server to join on
      * @return True if successful connection
      */
-    public boolean connect(VoiceChannel channel, Guild guild) {
-        // TODO: Extend to support multiple servers
-        if (audioMan == null){
-            audioMan = guild.getAudioManager();
-            audioMan.setSendingHandler(audioHandler);
+    public int connect(VoiceChannel channel, Guild guild) {
+        AudioManager audioMan = guild.getAudioManager();
+
+        if (!audioHandlers.containsKey(guild.getIdLong())) {
+            AudioHandler handler = new AudioHandler();
+            audioMan.setSendingHandler(handler);
+            audioHandlers.put(guild.getIdLong(), handler);
         }
 
-        if (audioMan.isConnected()) {
-            if (audioMan.getConnectedChannel().equals(channel)) {
-                return false;
-            }
-        }
+        if (audioMan.isConnected() && audioMan.getConnectedChannel().equals(channel)) return 1;
 
         if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)){
-            return false;
+            return 2;
         }
 
         audioMan.openAudioConnection(channel);
-        return true;
+        return 0;
     }
 
-    public boolean quit(){
-        if (audioMan != null && audioMan.isConnected()) {
-            audioMan.closeAudioConnection();
+    public boolean quit(Guild guild){
+        if (isConnected(guild)) {
+            guild.getAudioManager().closeAudioConnection();
             return true;
         } else {
             return false;
         }
     }
 
-    public AudioHandler getHandler(){
-        if (isConnected()) {
-            return audioHandler;
-        }
-        return null;
+    public AudioHandler getHandler(Guild guild){
+        return audioHandlers.get(guild.getIdLong());
     }
 
-    public boolean isConnected(){
-        return audioMan != null && audioMan.isConnected();
+    public boolean isConnected(Guild guild){
+        return guild.getAudioManager().isConnected();
     }
 
     @Nullable
-    public VoiceChannel getChannel(){
-        return audioMan.getConnectedChannel();
+    public VoiceChannel getChannel(Guild guild){
+        return guild.getAudioManager().getConnectedChannel();
     }
 }

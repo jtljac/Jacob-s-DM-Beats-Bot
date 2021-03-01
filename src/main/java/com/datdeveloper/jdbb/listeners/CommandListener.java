@@ -22,204 +22,243 @@ public class CommandListener extends ListenerAdapter {
         String content = event.getMessage().getContentRaw();
 
         if (content.startsWith(commandPrefix)) {
+            String response = null;
             if (content.length() > commandPrefix.length() + 1) {
                 Bot.logger.info("Received command: " + content + ", from " + event.getAuthor().getAsTag());
 
                 // Split command into parts
                 String[] command = content.substring(commandPrefix.length() + 1).toLowerCase().split(" ");
+                String userId = event.getMember().getId();
+
                 switch (command[0]) {
                     case "join":
                         VoiceChannel playerChannel = event.getMember().getVoiceState().getChannel();
                         if (playerChannel != null) {
-                            if (!VoiceManager.getInstance().connect(playerChannel, event.getGuild())) {
-                                event.getChannel().sendMessage("Unable to join voice channel").queue();
+                            switch (VoiceManager.getInstance().connect(playerChannel, event.getGuild())) {
+                                case 1:
+                                    response = "Aleady connected to that channel";
+                                case 2:
+                                    response = "No permission to join that voice channel";
                             }
                         } else {
-                            event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You must be in a voice channel to do that").queue();
+                            response = event.getAuthor().getAsMention() + " You must be in a voice channel to do that";
+                        }
+                        break;
+
+                    case "quit":
+                        if (Bot.DMs.contains(userId)) {
+                            if (!VoiceManager.getInstance().quit(event.getGuild())) {
+                                response = "The bot is not connected";
+                            }
+                        } else {
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "reload":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) handler.loadCommands();
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "p":
                     case "play":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 if (command.length > 1) {
                                     if (!handler.playTrack(command[1], false)) {
-                                        event.getChannel().sendMessage("Unknown track").queue();
+                                        response = "Unknown track";
                                     }
                                 } else {
-                                    event.getChannel().sendMessage("You need to provide a song").queue();
+                                    response = "You need to provide a song";
                                 }
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "fp":
                     case "forceplay":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 if (command.length > 1) {
                                     if (!handler.playTrack(command[1], true)) {
-                                        event.getChannel().sendMessage("Unknown track").queue();
+                                        response = "Unknown track";
                                     }
                                 } else {
-                                    event.getChannel().sendMessage("You need to provide a song").queue();
+                                    response = "You need to provide a song";
                                 }
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "queue":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 List<TrackRules> queue = handler.scheduler.getQueue();
                                 StringBuilder message = new StringBuilder();
+                                message.append("Current Song: ```").append(handler.scheduler.getCurrentTrack().track.getIdentifier()).append("```\n");
                                 message.append("Queued songs:\n```\n");
                                 for (int i = 0; i < queue.size(); i++) {
                                     message.append(i + 1).append(".) ").append(queue.get(i).track.getIdentifier()).append(": ").append(queue.get(i).loopcount);
                                 }
                                 message.append("```");
+                                response = message.toString();
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "clearqueue":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) handler.scheduler.clearQueue();
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "shuffle":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) handler.scheduler.shuffle();
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "skip":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) handler.scheduler.skip();
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "resume":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 switch(handler.scheduler.resume()) {
                                     case 1:
-                                        event.getChannel().sendMessage("The bot does not currently have a track loaded to resume").queue();
+                                        response = "The bot does not currently have a track loaded to resume";
                                         break;
                                     case 2:
-                                        event.getChannel().sendMessage("The track is already playing").queue();
+                                        response = "The track is already playing";
                                         break;
                                 }
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "stop":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 switch(handler.scheduler.stop()) {
                                     case 1:
-                                        event.getChannel().sendMessage("The bot is not currently playing a track to pause").queue();
+                                        response = "The bot is not currently playing a track to pause";
                                         break;
                                     case 2:
-                                        event.getChannel().sendMessage("The track is already paused").queue();
+                                        response = "The track is already paused";
                                         break;
                                 }
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
+                        }
+                        break;
+
+                    case "loop":
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
+                            if (handler != null) {
+                                if (handler.scheduler.loop()) {
+                                    response = "Looping enabled: Now looping the current song";
+                                } else {
+                                    response = "Looping disabled: Now continuing through the queue";
+                                }
+                            }
+                            else response = "The bot must be connected to an audio channel";
+                        } else {
+                            response = "That is a dm only command";
+                        }
+                        break;
+
+                    case "loopqueue":
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
+                            if (handler != null) {
+                                if (handler.scheduler.loopQueue()) {
+                                    response = "Queue looping enabled: Now re-queuing songs after they finish";
+                                } else {
+                                    response = "Queue looping disabled: Now discarding songs after they finish";
+                                }
+                            }
+                            else response = "The bot must be connected to an audio channel";
+                        } else {
+                            response = "That is a dm only command";
                         }
                         break;
 
                     case "seek":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            AudioHandler handler = VoiceManager.getInstance().getHandler();
+                        if (Bot.DMs.contains(userId)) {
+                            AudioHandler handler = VoiceManager.getInstance().getHandler(event.getGuild());
                             if (handler != null) {
                                 if (command.length > 1) {
                                     try {
-                                        switch (VoiceManager.getInstance().audioHandler.scheduler.seek(Float.parseFloat(command[1]))) {
+                                        switch (handler.scheduler.seek(Float.parseFloat(command[1]))) {
                                             case 1:
-                                                event.getChannel().sendMessage("You cannot seek through this track").queue();
+                                                response = "You cannot seek through this track";
                                                 break;
                                             case 2:
-                                                event.getChannel().sendMessage("You need to provide a valid time").queue();
+                                                response = "You need to provide a valid time";
                                                 break;
                                             case 3:
-                                                event.getChannel().sendMessage("There isn't a track to seek").queue();
+                                                response = "There isn't a track to seek";
                                         }
                                     } catch (NumberFormatException e) {
-                                        event.getChannel().sendMessage("You need to provide a valid time").queue();
+                                        response = "You need to provide a valid time";
                                     }
                                 } else {
-                                    event.getChannel().sendMessage("You need to provide a time").queue();
+                                    response = "You need to provide a time";
                                 }
                             }
-                            else event.getChannel().sendMessage("The bot must be connected to an audio channel").queue();
+                            else response = "The bot must be connected to an audio channel";
                         } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
-                        }
-                        break;
-
-                    case "quit":
-                        if (Bot.DMs.contains(event.getMember().getId())) {
-                            if (VoiceManager.getInstance().isConnected()) {
-                                VoiceManager.getInstance().quit();
-                            } else {
-                                event.getChannel().sendMessage("The bot is not connected").queue();
-                            }
-                        } else {
-                            event.getChannel().sendMessage("That is a dm only command").queue();
+                            response = "That is a dm only command";
                         }
                         break;
 
                     default:
-                        event.getChannel().sendMessage("I don't know that command").queue();
+                        response = "I don't know that command";
                 }
             } else {
-                event.getChannel().sendMessage("Please enter a subcommand").queue();
+                response = "Please enter a subcommand";
             }
+            if (response != null) event.getChannel().sendMessage(response).queue();
         }
     }
 }

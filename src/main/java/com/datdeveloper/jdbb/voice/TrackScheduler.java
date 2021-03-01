@@ -128,4 +128,29 @@ public class TrackScheduler extends AudioEventAdapter {
         currentTrack.track.setPosition(time);
         return 0;
     }
+
+    /**
+     * Switches the scheduler to loop the current current song or not depending on it's current state
+     * @return True if the scheduler is now looping the current song
+     */
+    public boolean loop() {
+        forceLoop = !forceLoop;
+        return forceLoop;
+    }
+
+    /**
+     * Switches the scheduler to loop the current queue (songs will be requeued after they finish
+     * @return True if the scheduler is now looping the queue
+     */
+    public boolean loopQueue() {
+        queueLoop = !queueLoop;
+        return queueLoop;
+    }
+
+    /**
+     * Gets the currently playing track
+     */
+    public TrackRules getCurrentTrack() {
+        return currentTrack;
+    }
 }
