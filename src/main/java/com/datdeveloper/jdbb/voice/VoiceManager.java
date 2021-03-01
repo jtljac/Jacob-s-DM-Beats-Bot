@@ -17,7 +17,9 @@ public class VoiceManager {
         }
         return instance;
     }
-    public Map<Long, AudioHandler> audioHandlers = new HashMap<>();
+
+
+    final Map<Long, AudioHandler> audioHandlers = new HashMap<>();
 
     /**
      * Connect the bot to the given voice channel
@@ -47,6 +49,7 @@ public class VoiceManager {
     public boolean quit(Guild guild){
         if (isConnected(guild)) {
             guild.getAudioManager().closeAudioConnection();
+            audioHandlers.remove(guild.getIdLong());
             return true;
         } else {
             return false;
@@ -55,6 +58,10 @@ public class VoiceManager {
 
     public AudioHandler getHandler(Guild guild){
         return audioHandlers.get(guild.getIdLong());
+    }
+
+    public AudioHandler getHandler(Long id) {
+        return audioHandlers.get(id);
     }
 
     public boolean isConnected(Guild guild){

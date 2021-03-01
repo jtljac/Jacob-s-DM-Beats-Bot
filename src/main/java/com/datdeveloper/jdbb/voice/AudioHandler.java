@@ -35,7 +35,7 @@ public class AudioHandler implements AudioSendHandler {
 
     private AudioFrame lastFrame;
 
-    protected HashMap<String, Command> commands;
+    public HashMap<String, Command> commands;
 
     public AudioHandler() {
         AudioSourceManagers.registerRemoteSources(playerManager);

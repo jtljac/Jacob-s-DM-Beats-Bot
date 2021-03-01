@@ -234,7 +234,7 @@ public class CommandListener extends ListenerAdapter {
                                                 response = "You cannot seek through this track";
                                                 break;
                                             case 2:
-                                                response = "You need to provide a valid time";
+                                                response = "You need to provide a valid time, between 0 and " + handler.scheduler.getCurrentTrack().track.getDuration();
                                                 break;
                                             case 3:
                                                 response = "There isn't a track to seek";

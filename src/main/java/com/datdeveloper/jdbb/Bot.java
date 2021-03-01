@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Spark;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
@@ -26,6 +27,8 @@ public class Bot {
     // Discord ID's for permissions
     public static final List<String> DMs = Arrays.asList("713447797491368007", "160836068931928064");
 
+    public static RestAPI rest;
+
 
     public static void main(String[] args) throws LoginException, InterruptedException {
         JDA api = JDABuilder.createDefault(SecretStuff.DISCORDBOTKEY)
@@ -33,6 +36,8 @@ public class Bot {
                 .setAudioSendFactory(new NativeAudioSendFactory())
                 .build();
         api.addEventListener(new CommandListener());
+
+        rest = new RestAPI();
 
         Activity nextActivityStatus;
 
