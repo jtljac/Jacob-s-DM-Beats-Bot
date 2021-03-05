@@ -112,7 +112,7 @@ public class CommandListener extends ListenerAdapter {
                                 message.append("Current Song: ```").append(handler.scheduler.getCurrentTrack().track.getIdentifier()).append("```\n");
                                 message.append("Queued songs:\n```\n");
                                 for (int i = 0; i < queue.size(); i++) {
-                                    message.append(i + 1).append(".) ").append(queue.get(i).track.getIdentifier()).append(": ").append(queue.get(i).loopcount);
+                                    message.append(i + 1).append(".) ").append(queue.get(i).track.getIdentifier()).append(": ").append(queue.get(i).loopcount).append("\n");
                                 }
                                 message.append("```");
                                 response = message.toString();

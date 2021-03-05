@@ -1,5 +1,6 @@
 package com.datdeveloper.jdbb.voice;
 
+import com.datdeveloper.jdbb.model.Track;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -86,6 +87,7 @@ public class TrackScheduler extends AudioEventAdapter {
      * @return If theres any songs left
      */
     public boolean skip() {
+        if (queueLoop) trackQueue.add(new TrackRules(currentTrack.track.makeClone(), currentTrack.loopcount));
         if (!trackQueue.isEmpty()) {
             currentTrack = trackQueue.remove();
             player.playTrack(currentTrack.track);
@@ -102,6 +104,7 @@ public class TrackScheduler extends AudioEventAdapter {
         else if (player.isPaused()) return 2;
 
         player.setPaused(true);
+        player.stopTrack();
         return 0;
     }
 

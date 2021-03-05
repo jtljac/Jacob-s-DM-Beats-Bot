@@ -82,7 +82,7 @@ public class AudioHandler implements AudioSendHandler {
 
         for (;i < trackList.size(); ++i) {
             Track track = trackList.get(i);
-            playTrack(basePath.resolve(track.path).toString(), track.loop, false);
+            playTrack(track.getPath(basePath), track.loop, false);
         }
 
         return true;

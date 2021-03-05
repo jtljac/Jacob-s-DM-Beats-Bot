@@ -1,14 +1,15 @@
 package com.datdeveloper.jdbb.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class Command {
-    public boolean random;
+    public boolean random = false;
+    public boolean shuffle = false;
     public List<Track> tracks = new ArrayList<>();
-    private transient boolean shuffled = false;
+    public String category;
+
 
     public Command() {}
 
@@ -22,9 +23,9 @@ public class Command {
 
     public List<Track> getTracks() {
         if (random) {
-            if (!shuffled) {
+            if (shuffle) {
                 Collections.shuffle(tracks);
-                shuffled = true;
+                shuffle = false;
             }
             Track track = tracks.remove(0);
             tracks.add(track);
