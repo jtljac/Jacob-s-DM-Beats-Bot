@@ -30,7 +30,7 @@ public class CommandListener extends ListenerAdapter {
                 String[] command = content.substring(commandPrefix.length() + 1).toLowerCase().split(" ");
                 String userId = event.getMember().getId();
 
-                switch (command[0]) {
+                switch (command[0].toLowerCase()) {
                     case "join":
                         VoiceChannel playerChannel = event.getMember().getVoiceState().getChannel();
                         if (playerChannel != null) {
